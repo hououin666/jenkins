@@ -8,16 +8,34 @@ pipeline {
             }
         }
 
-        stage('Build with Absolute Path') {
+        stage('Build with Maven') {
             steps {
                 bat '''
                     echo ====================================
-                    echo Сборка с абсолютным путем к Maven
+                    echo Сборка проекта с Maven
                     echo ====================================
 
+                    REM Проверяем Maven
                     "C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn.cmd" --version
+
                     echo.
-                    "C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn.cmd" clean install -DskipTests
+                    echo Запускаем сборку проекта...
+                    echo.
+
+                    REM Собираем проект
+                    "C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn.cmd" clean compile
+
+                    echo.
+                    echo Сборка успешно завершена!
+                '''
+            }
+        }
+
+        stage('Package') {
+            steps {
+                bat '''
+                    echo Создаем JAR пакет...
+                    "C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn.cmd" package -DskipTests
                 '''
             }
         }
@@ -25,7 +43,15 @@ pipeline {
 
     post {
         always {
-            echo 'Сборка завершена'
+            echo '===================================='
+            echo 'Pipeline завершен'
+            echo '===================================='
+        }
+        success {
+            bat 'echo УСПЕХ! Проект успешно собран!'
+        }
+        failure {
+            bat 'echo НЕУДАЧА. Проверьте логи ошибок.'
         }
     }
 }

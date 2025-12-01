@@ -2,56 +2,48 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout Git') {
+        stage('Checkout') {
             steps {
-                git url: 'https://github.com/hououin666/jenkins.git', branch: 'master'
+                // Этот stage уже есть автоматически
+                echo 'Checkout выполнен'
             }
         }
 
-        stage('Build with Maven') {
+        stage('Build') {
             steps {
-                bat '''
-                    echo ====================================
-                    echo Сборка проекта с Maven
-                    echo ====================================
+                // Используйте ПОЛНЫЙ путь к Maven
+                bat 'C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn --version'
 
-                    REM Проверяем Maven
-                    "C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn.cmd" --version
+                bat 'C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn clean install'
 
-                    echo.
-                    echo Запускаем сборку проекта...
-                    echo.
-
-                    REM Собираем проект
-                    "C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn.cmd" clean compile
-
-                    echo.
-                    echo Сборка успешно завершена!
-                '''
+                bat 'C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn clean compile'
             }
         }
 
+        stage('Test') {
+                    steps {
+                        script {
+                            bat 'C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn test'
+                        }
+                    }
+                }
         stage('Package') {
             steps {
-                bat '''
-                    echo Создаем JAR пакет...
-                    "C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn.cmd" package -DskipTests
-                '''
+                bat 'C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn package -DskipTests'
             }
         }
     }
 
     post {
         always {
-            echo '===================================='
-            echo 'Pipeline завершен'
-            echo '===================================='
+            echo 'Сборка завершена'
         }
         success {
-            bat 'echo УСПЕХ! Проект успешно собран!'
+            echo 'УСПЕХ!'
+            archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
         }
         failure {
-            bat 'echo НЕУДАЧА. Проверьте логи ошибок.'
+            echo 'ПРОВАЛ :('
         }
     }
 }

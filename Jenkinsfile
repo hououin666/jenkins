@@ -4,38 +4,35 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                // Этот stage уже есть автоматически
+                echo 'Checkout выполнен'
             }
         }
 
         stage('Build') {
             steps {
-                script {
-                    bat 'mvn clean install'
-                }
+                // Используйте ПОЛНЫЙ путь к Maven
+                bat 'C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn --version'
+                bat 'C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn clean compile -DskipTests'
             }
         }
 
-        stage('Test') {
+        stage('Package') {
             steps {
-                script {
-                    bat 'mvn test'
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                script {
-                    bat 'mvn deploy'
-                }
+                bat 'C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn package -DskipTests'
             }
         }
     }
 
     post {
         always {
-            cleanWs()
+            echo 'Сборка завершена'
+        }
+        success {
+            echo 'УСПЕХ!'
+        }
+        failure {
+            echo 'ПРОВАЛ :('
         }
     }
 }

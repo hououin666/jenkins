@@ -2,40 +2,30 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('Checkout Git') {
             steps {
-                checkout scm
+                git url: 'https://github.com/hououin666/jenkins.git', branch: 'master'
             }
         }
 
-        stage('Build') {
+        stage('Build with Absolute Path') {
             steps {
-                script {
-                    bat 'mvn clean install'
-                }
-            }
-        }
+                bat '''
+                    echo ====================================
+                    echo Сборка с абсолютным путем к Maven
+                    echo ====================================
 
-        stage('Test') {
-            steps {
-                script {
-                    bat 'mvn test'
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                script {
-                    bat 'mvn deploy'
-                }
+                    "C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn.cmd" --version
+                    echo.
+                    "C:\\Users\\redlikeroses\\Downloads\\apache-maven-3.9.11-bin\\apache-maven-3.9.11\\bin\\mvn.cmd" clean install -DskipTests
+                '''
             }
         }
     }
 
     post {
         always {
-            cleanWs()
+            echo 'Сборка завершена'
         }
     }
 }

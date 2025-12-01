@@ -40,6 +40,7 @@ pipeline {
         }
         success {
             echo 'УСПЕХ!'
+            archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
         }
         failure {
             echo 'ПРОВАЛ :('
